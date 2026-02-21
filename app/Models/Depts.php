@@ -1,0 +1,14 @@
+<?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Depts extends Model
+{
+    use HasFactory;
+
+    protected $table = 'tbldepts';
+    protected $primaryKey = 'ID';
+    protected $fillable = ['deptname', 'HOD'];
+}
