@@ -295,8 +295,10 @@ Route::post('supplier_invitations',[SupplierController::class, 'storeInvoiceInvi
 Route::post('send_invoice_invitation/{invoice_id}', [SupplierController::class, 'sendInvoiceInvitation'])->name('suppliers.sendInvitation');
 Route::get('supplier_payments', [SupplierController::class, 'payments'])->name('payments.manage');
 Route::post('supplier_payments', [SupplierController::class, 'storePayment'])->name('suppliers.payments.store');
-
 Route::get('invoice-form/{invitation}', [SupplierController::class, 'showInvoiceForm'])->name('supplier.invoice.form');
+Route::post('/supplier/invoice/{id}/approve',[SupplierController::class, 'approveInvoice']);
+Route::post('/supplier/invoice/{id}/reject',[SupplierController::class, 'rejectInvoice']);
+Route::post('/supplier/invoice/{id}/paid',[SupplierController::class, 'markInvoicePaid']);
 
 Route::post('invoice-form/{invitation}', [SupplierController::class, 'submitInvoiceForm'])->name('supplier.invoice.submit');
 require __DIR__.'/auth.php';

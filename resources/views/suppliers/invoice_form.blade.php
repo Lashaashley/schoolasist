@@ -81,7 +81,8 @@ $(document).ready(function(){
         let formData = new FormData(this);
 
         $.ajax({
-            url: "{{ route('supplier.invoice.submit') }}",
+
+            url: "{{ route('supplier.invoice.submit', $invitation->id) }}",
             type: "POST",
             data: formData,
             processData: false,

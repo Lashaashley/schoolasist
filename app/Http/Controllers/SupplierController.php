@@ -440,4 +440,40 @@ public function submitInvoiceForm(Request $request)
     ]);
 }
 
+public function showInvoiceForm(SupplierInvitation $invitation)
+{
+    // Optional: check expiration
+    if ($invitation->expires_at && now()->gt($invitation->expires_at)) {
+        abort(403, 'This invitation has expired.');
+    }
+
+    return view('suppliers.invoice_form', compact('invitation'));
+
+    }
+    public function approveInvoice($id)
+{
+    $invoice = SupplierInvoice::findOrFail($id);
+    $invoice->status = 'approved';
+    $invoice->save();
+    return response()->json(['success' => true]);
+}
+
+public function rejectInvoice($id)
+{
+    $invoice = SupplierInvoice::findOrFail($id);
+    $invoice->status = 'rejected';
+    $invoice->save();
+    return response()->json(['success' => true]);
+}
+
+public function markInvoicePaid($id)
+{
+    $invoice = SupplierInvoice::findOrFail($id);
+    $invoice->status = 'paid';
+    $invoice->balance = 0;
+    $invoice->amount_paid = $invoice->total_amount;
+    $invoice->save();
+    return response()->json(['success' => true]);
+}
+
 }

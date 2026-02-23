@@ -5,18 +5,15 @@
     <h4 class="mb-20">Supplier Invoices</h4>
 
     <ul class="nav nav-tabs mb-20">
-        <li class="nav-item">
-            <a class="nav-link active" data-toggle="tab" href="#pending">Pending</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#approved">Approved</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#paid">Paid</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#rejected">Rejected</a>
-        </li>
+        @foreach(['pending','approved','paid','rejected'] as $tab)
+            <li class="nav-item">
+                <a class="nav-link {{ $tab=='pending'?'active':'' }}" 
+                   data-toggle="tab" 
+                   href="#{{ $tab }}">
+                   {{ ucfirst($tab) }}
+                </a>
+            </li>
+        @endforeach
     </ul>
 
     <div class="tab-content">
@@ -31,7 +28,7 @@
                             <th>Supplier</th>
                             <th>Amount</th>
                             <th>Status</th>
-                            <th width="250">Action</th>
+                            <th width="120" class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,7 +36,7 @@
                         <tr>
                             <td>{{ $invoice->invoice_number }}</td>
                             <td>{{ $invoice->supplier->name }}</td>
-                            <td>{{ number_format($invoice->amount,2) }}</td>
+                            <td>{{ number_format($invoice->total_amount,2) }}</td>
                             <td>
                                 <span class="badge badge-{{ 
                                     $status=='pending'?'warning':
@@ -49,24 +46,58 @@
                                     {{ ucfirst($status) }}
                                 </span>
                             </td>
-                            <td>
-                                @if($status=='pending')
-                                    <button class="btn btn-sm btn-success approve-btn"
-                                        data-id="{{ $invoice->id }}">Approve</button>
-                                    <button class="btn btn-sm btn-danger reject-btn"
-                                        data-id="{{ $invoice->id }}">Reject</button>
-                                @endif
 
-                                @if($status=='approved')
-                                    <button class="btn btn-sm btn-primary pay-btn"
-                                        data-id="{{ $invoice->id }}">Mark Paid</button>
-                                @endif
+                            <!-- ACTION DROPDOWN -->
+                            <td class="text-center">
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm"
+                                            type="button"
+                                            data-toggle="dropdown">
+                                        <i class="fa fa-ellipsis-v"></i>
+                                    </button>
 
-                                <a href="{{ asset('storage/'.$invoice->invoice_file) }}" 
-                                   class="btn btn-sm btn-secondary" target="_blank">
-                                   View
-                                </a>
+                                    <div class="dropdown-menu dropdown-menu-right">
+
+                                        {{-- Pending Actions --}}
+                                        @if($status == 'pending')
+                                            <a href="#"
+                                               class="dropdown-item action-btn"
+                                               data-action="approve"
+                                               data-id="{{ $invoice->id }}">
+                                                Approve
+                                            </a>
+
+                                            <a href="#"
+                                               class="dropdown-item text-danger action-btn"
+                                               data-action="reject"
+                                               data-id="{{ $invoice->id }}">
+                                                Reject
+                                            </a>
+                                        @endif
+
+                                        {{-- Approved Actions --}}
+                                        @if($status == 'approved')
+                                            <a href="#"
+                                               class="dropdown-item text-primary action-btn"
+                                               data-action="paid"
+                                               data-id="{{ $invoice->id }}">
+                                                Mark Paid
+                                            </a>
+                                        @endif
+
+                                        {{-- View --}}
+                                        @if($invoice->attachment)
+                                            <a href="{{ asset('storage/'.$invoice->attachment) }}"
+                                               target="_blank"
+                                               class="dropdown-item">
+                                                View
+                                            </a>
+                                        @endif
+
+                                    </div>
+                                </div>
                             </td>
+
                         </tr>
                         @endforeach
                     </tbody>
@@ -80,16 +111,28 @@
 </div>
 
 <script>
-$('.approve-btn').click(function(){
-    let id = $(this).data('id');
-    $.post('/supplier/invoice/'+id+'/approve',{_token:'{{ csrf_token() }}'},function(){
-        location.reload();
-    });
-});
+$(document).on('click', '.action-btn', function(e){
+    e.preventDefault();
 
-$('.reject-btn').click(function(){
     let id = $(this).data('id');
-    $.post('/supplier/invoice/'+id+'/reject',{_token:'{{ csrf_token() }}'},function(){
+    let action = $(this).data('action');
+    let url = '';
+
+    if(action === 'approve'){
+        url = '/supplier/invoice/' + id + '/approve';
+    }
+
+    if(action === 'reject'){
+        url = '/supplier/invoice/' + id + '/reject';
+    }
+
+    if(action === 'paid'){
+        url = '/supplier/invoice/' + id + '/paid';
+    }
+
+    if(!confirm('Are you sure?')) return;
+
+    $.post(url, {_token: '{{ csrf_token() }}'}, function(){
         location.reload();
     });
 });
