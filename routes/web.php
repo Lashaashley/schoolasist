@@ -31,6 +31,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RolesReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeeReportController;
+use App\Http\Controllers\SupplierController;
 
 
 Route::get('/', function () {
@@ -274,4 +275,28 @@ Route::get('/fee-reports/filters', [FeeReportController::class, 'getFilters'])->
 Route::get('/fee-reports/classes-by-branch', [FeeReportController::class, 'getClassesByBranch'])->name('fee-reports.classes-by-branch');
 Route::get('/fee-reports/export', [FeeReportController::class, 'export'])->name('fee-reports.export');
 
+Route::get('add_supplier', [SupplierController::class, 'create'])->name('supplier.create');
+Route::post('add_supplier', [SupplierController::class, 'store'])->name('supplier.store');
+Route::get('manage_suppliers', [SupplierController::class, 'manage'])->name('suppliers.manage');
+Route::get('get_suppliers', [SupplierController::class, 'getSuppliers'])->name('suppliers.get');
+Route::put('suppliers/{id}', [SupplierController::class, 'update'])->name('suppliers.update');
+Route::delete('suppliers/{id}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+
+
+
+Route::get('manage_invoices', [SupplierController::class, 'indexInvoices'])->name('suppliers.invoices');
+Route::get('add_invoice', [SupplierController::class, 'createInvoice'])->name('invoices.create');
+Route::post('add_invoice', [SupplierController::class, 'storeInvoice'])->name('invoices.store');
+Route::get('edit_invoice/{id}', [SupplierController::class, 'editInvoice'])->name('invoices.edit');
+Route::put('update_invoice/{id}', [SupplierController::class, 'updateInvoice'])->name('invoices.update');
+Route::delete('delete_invoice/{id}', [SupplierController::class, 'destroyInvoice'])->name('invoices.destroy');
+Route::get('supplier_invitations', [SupplierController::class, 'supplierInvitations'])->name('suppliers.create_invitations');
+Route::post('supplier_invitations',[SupplierController::class, 'storeInvoiceInvitation'])->name('supplier.invitations.store');
+Route::post('send_invoice_invitation/{invoice_id}', [SupplierController::class, 'sendInvoiceInvitation'])->name('suppliers.sendInvitation');
+Route::get('supplier_payments', [SupplierController::class, 'payments'])->name('payments.manage');
+Route::post('supplier_payments', [SupplierController::class, 'storePayment'])->name('suppliers.payments.store');
+
+Route::get('invoice-form/{invitation}', [SupplierController::class, 'showInvoiceForm'])->name('supplier.invoice.form');
+
+Route::post('invoice-form/{invitation}', [SupplierController::class, 'submitInvoiceForm'])->name('supplier.invoice.submit');
 require __DIR__.'/auth.php';
