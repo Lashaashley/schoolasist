@@ -242,12 +242,11 @@
                         </div>
                         <div class="col-md-6 mb-10">
                             <label>Payment Method</label>
-                            <select name="payment_method" class="form-control">
-                                <option value="cash">Cash</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                                <option value="cheque">Cheque</option>
-                                <option value="mobile_money">Mobile Money</option>
-                            </select>
+                            <select name="payment_method" class="form-control" required>
+    <option value="">Select Payment Method</option>
+    <option value="mpesa">M-Pesa</option>
+    <option value="bank">Bank Payment</option>
+</select>
                         </div>
                         <div class="col-md-6 mb-10">
                             <label>Reference</label>
@@ -268,7 +267,7 @@
 </div>
 
 <script>
-    feather.replace(); // Initialize Feather Icons
+    feather.replace(); 
 </script>
 
 </x-custom-admin-layout>

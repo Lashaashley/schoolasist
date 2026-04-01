@@ -67,12 +67,21 @@
     <div class="container">
         <h2>Hello {{ $invitation->supplier->name }},</h2>
 
-        <p>You have been invited to submit an invoice for the following:</p>
+        <p>You have been invited to submit an invoice for the following LPO:</p>
 
         <ul>
             <li><strong>Company:</strong> {{ $invitation->supplier->company }}</li>
-            <li><strong>Invoice Number:</strong> {{ $invitation->invoice->invoice_number ?? 'N/A' }}</li>
+            <li><strong>LPO Number:</strong> {{ $invitation->lpo_number }}</li>
             <li><strong>Category:</strong> {{ ucfirst($invitation->category) }}</li>
+            <li><strong>Items:</strong> 
+                @if(is_array($invitation->items_array))
+                    {{ implode(', ', $invitation->items_array) }}
+                @else
+                    {{ $invitation->items_array }}
+                @endif
+            </li>
+            <li><strong>Total Quantity:</strong> {{ $invitation->quantity }}</li>
+            <li><strong>Total Amount:</strong> KES {{ number_format($invitation->amount,2) }}</li>
             @if($invitation->message)
                 <li><strong>Message:</strong> {{ $invitation->message }}</li>
             @endif
@@ -81,7 +90,7 @@
             @endif
         </ul>
 
-        <p>Please click the button below to fill out and submit your invoice:</p>
+        <p>Please click the button below to fill out and submit your invoice. You only need to provide the <strong>Invoice Number</strong>.</p>
 
         <a href="{{ $link }}" target="_blank" class="button">Submit Invoice</a>
 

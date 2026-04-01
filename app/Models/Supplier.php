@@ -17,6 +17,13 @@ class Supplier extends Model
         'address',
         'profile',
         'invoice_no',
+        'bank_name',
+        'account_name',
+        'account_number',
+        'mpesa_paybill',
+        'mpesa_till',
+        'mpesa_phone'
+
         //'type', // optional: supply type
     ];
 

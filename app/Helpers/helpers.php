@@ -30,4 +30,28 @@ if (!function_exists('logAuditTrail')) {
             Log::error('Audit trail logging failed: ' . $e->getMessage());
         }
     }
+
+}
+
+if (!function_exists('formatPhoneNumber')) {
+    function formatPhoneNumber($phone)
+    {
+        // Remove all non-digits
+        $phone = preg_replace('/\D/', '', $phone);
+
+        // +254, 0, 7, or 1
+        if (substr($phone, 0, 3) === '254') {
+            return $phone;
+        }
+
+        if (substr($phone, 0, 1) === '0') {
+            return '254' . substr($phone, 1);
+        }
+
+        if (substr($phone, 0, 1) === '7' || substr($phone, 0, 1) === '1') {
+            return '254' . $phone;
+        }
+
+        return $phone; // fallback, leave as-is
+    }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
+
 use App\Http\Controllers\StaticController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\HousesController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\BusesController;
 use App\Http\Controllers\DesignationsController;
 use App\Http\Controllers\FeeitemsController;
 use App\Http\Controllers\FeeassignController;
+use App\Http\Controllers\MpesaController;
 use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\PeriodsController;
 use App\Http\Controllers\FcategoriesController;
@@ -32,6 +34,7 @@ use App\Http\Controllers\RolesReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FeeReportController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\LpoController;
 
 
 Route::get('/', function () {
@@ -275,6 +278,15 @@ Route::get('/fee-reports/filters', [FeeReportController::class, 'getFilters'])->
 Route::get('/fee-reports/classes-by-branch', [FeeReportController::class, 'getClassesByBranch'])->name('fee-reports.classes-by-branch');
 Route::get('/fee-reports/export', [FeeReportController::class, 'export'])->name('fee-reports.export');
 
+
+
+Route::get('/pay_fees', [MpesaController::class, 'showPayFeesForm'])->name('pay_fees');
+
+Route::post('/stkpush', [MpesaController::class, 'stkPush'])->name('mpesa.stkPush');
+
+Route::post('/mpesa/callback', [MpesaController::class, 'stkCallback'])->name('mpesa.stkCallback');
+//Route::post('/api/stk/push/callback/url', [MpesaController::class, 'stkCallback']);
+
 Route::get('add_supplier', [SupplierController::class, 'create'])->name('supplier.create');
 Route::post('add_supplier', [SupplierController::class, 'store'])->name('supplier.store');
 Route::get('manage_suppliers', [SupplierController::class, 'manage'])->name('suppliers.manage');
@@ -301,4 +313,15 @@ Route::post('/supplier/invoice/{id}/reject',[SupplierController::class, 'rejectI
 Route::post('/supplier/invoice/{id}/paid',[SupplierController::class, 'markInvoicePaid']);
 
 Route::post('invoice-form/{invitation}', [SupplierController::class, 'submitInvoiceForm'])->name('supplier.invoice.submit');
+
+
+Route::get('/create_lpo', [LpoController::class, 'create'])->name('lpo.create');
+Route::get('/lpo/generate-number', [LpoController::class, 'generateNumber'])->name('lpo.generateNumber');
+Route::post('/lpo/store', [LpoController::class, 'store'])->name('lpo.store');
+Route::get('/{id}/edit_lpo', [LpoController::class, 'edit'])->name('lpo.edit');
+Route::put('/{id}', [LpoController::class, 'update'])->name('lpo.update');
+Route::delete('/{id}', [LpoController::class, 'destroy'])->name('lpo.destroy');
+Route::get('/lpo/{id}/details', [SupplierController::class, 'getLpoDetails'])->name('lpo.details');
+Route::get('/category-items/{category}', [LpoController::class, 'categoryItems']);
+Route::get('/sub-categories/{parent}', [LpoController::class, 'subCategories']);
 require __DIR__.'/auth.php';

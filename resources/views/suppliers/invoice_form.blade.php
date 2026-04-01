@@ -1,113 +1,227 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Invoice</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background: #f8f9fa; padding-top: 50px; }
-        .card { max-width: 700px; margin: auto; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    </style>
-</head>
-<body>
+<div class="container">
 
-<div class="card">
-    <h4 class="mb-4">Submit Your Invoice</h4>
+    <h4 class="page-title">Invoice Submission</h4>
 
-    <form id="supplier-invoice-form" enctype="multipart/form-data">
-        @csrf
-        <input type="hidden" name="invitation_id" value="{{ $invitation->id }}">
-
-        <div class="mb-3">
-            <label class="form-label">Supplier</label>
-            <input type="text" class="form-control" value="{{ $invitation->supplier->name }} - {{ $invitation->supplier->company }}" disabled>
+    <!-- LPO Summary -->
+    <div class="card">
+        <h5>LPO Details</h5>
+        <div class="flex-row">
+            <div class="flex-col">
+                <label>LPO Number</label>
+                <input type="text" value="{{ $invitation->lpo->id ?? 'N/A' }}" readonly>
+            </div>
+            <div class="flex-col">
+                <label>Supplier</label>
+                <input type="text" value="{{ $invitation->supplier->name ?? '' }} - {{ $invitation->supplier->company ?? '' }}" readonly>
+            </div>
+            <div class="flex-col">
+                <label>Category</label>
+                <input type="text" value="{{ $invitation->category ?? 'N/A' }}" readonly>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">Category</label>
-            <input type="text" class="form-control" value="{{ ucfirst($invitation->category) }}" disabled>
+        <div class="flex-row">
+            <div class="flex-col">
+                <label>LPO Date</label>
+                <input type="text" value="{{ optional($invitation->lpo->created_at)->format('d M Y') ?? '-' }}" readonly>
+            </div>
+            <div class="flex-col">
+                <label>Expiry Date</label>
+                <input type="text" value="{{ optional($invitation->expires_at)->format('d M Y') ?? '-' }}" readonly>
+            </div>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Invoice Number</label>
-            <input type="text" name="invoice_number" class="form-control" required>
-            <small class="text-danger" id="invoice_number-error"></small>
+    <!-- LPO Items Table -->
+    <div class="card">
+        <h5>LPO Items</h5>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($invitation->lpo->items ?? [] as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->product_name }}</td>
+                            <td>{{ $item->quantity }}</td>
+                            <td>KES {{ number_format($item->unit_price, 2) }}</td>
+                            <td>KES {{ number_format($item->quantity * $item->unit_price, 2) }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-right">Grand Total</td>
+                        <td>KES {{ number_format($invitation->amount ?? 0, 2) }}</td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Invoice Date</label>
-            <input type="date" name="invoice_date" class="form-control" required>
-            <small class="text-danger" id="invoice_date-error"></small>
-        </div>
+    <!-- Invoice Submission Form -->
+    <div class="card">
+        <h5>Submit Your Invoice</h5>
+        <form action="{{ route('supplier.invoice.submit', $invitation->id) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="flex-row">
+                <div class="flex-col">
+                    <label>Invoice Number *</label>
+                    <input type="text" name="invoice_number" placeholder="Enter invoice number" required>
+                </div>
+                <div class="flex-col">
+                    <label>Invoice Date *</label>
+                    <input type="date" name="invoice_date" required>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Due Date</label>
-            <input type="date" name="due_date" class="form-control" required>
-            <small class="text-danger" id="due_date-error"></small>
-        </div>
+            <div class="flex-row" style="margin-top:10px;">
+                <div class="flex-col">
+                    <label>Attachment (Optional)</label>
+                    <input type="file" name="attachment">
+                </div>
+                <div class="flex-col">
+                    <label>Description (Optional)</label>
+                    <textarea name="description" rows="2" placeholder="Enter description"></textarea>
+                </div>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Total Amount</label>
-            <input type="number" step="0.01" name="total_amount" class="form-control" required>
-            <small class="text-danger" id="total_amount-error"></small>
-        </div>
+            <div style="margin-top:15px;">
+                <button type="submit" class="btn-primary">Submit Invoice</button>
+            </div>
+        </form>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Description (Optional)</label>
-            <textarea name="description" class="form-control" rows="3"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Attachment (Optional, PDF/JPG/PNG)</label>
-            <input type="file" name="attachment" class="form-control">
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Submit Invoice</button>
-    </form>
-
-    <div id="status-message" class="alert mt-3" style="display:none;"></div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function(){
+<style>
+/* Basic resets */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f7;
+    margin: 0;
+    padding: 0;
+}
 
-    $('#supplier-invoice-form').submit(function(e){
-        e.preventDefault();
-        $('#supplier-invoice-form small.text-danger').text('');
-        $('#status-message').hide();
+/* Container */
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 15px;
+}
 
-        let formData = new FormData(this);
+/* Page title */
+.page-title {
+    color: #333;
+    margin-bottom: 20px;
+}
 
-        $.ajax({
+/* Card style */
+.card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
 
-            url: "{{ route('supplier.invoice.submit', $invitation->id) }}",
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(res){
-                $('#status-message').removeClass('alert-danger').addClass('alert-success')
-                    .text(res.message).show();
-                $('#supplier-invoice-form')[0].reset();
-            },
-            error: function(xhr){
-                if(xhr.status === 422){
-                    let errors = xhr.responseJSON.errors;
-                    $.each(errors, function(key, value){
-                        $('#' + key + '-error').text(value[0]);
-                    });
-                } else {
-                    $('#status-message').removeClass('alert-success').addClass('alert-danger')
-                        .text('Something went wrong.').show();
-                }
-            }
-        });
-    });
+/* Flex layout for rows */
+.flex-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
 
-});
-</script>
+/* Columns */
+.flex-col {
+    flex: 1 1 300px;
+    min-width: 200px;
+}
 
-</body>
-</html>
+/* Form elements */
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #555;
+}
+
+input[type="text"], input[type="date"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* Table styling */
+.table-wrapper {
+    overflow-x:auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-size: 14px;
+}
+
+table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+table tfoot td {
+    font-weight: bold;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Button */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .flex-col {
+        flex: 1 1 100%;
+    }
+
+    table th, table td {
+        font-size: 12px;
+        padding: 6px;
+    }
+}
+</style>

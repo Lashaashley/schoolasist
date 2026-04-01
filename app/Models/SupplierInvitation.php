@@ -15,13 +15,17 @@ class SupplierInvitation extends Model
 
     // Mass assignable fields
     protected $fillable = [
-        'supplier_id',
-        'invoice_id',
-        'category',
-        'message',
-        'expires_at',
-        'responded', // boolean: 0 = pending, 1 = responded
-    ];
+    'supplier_id',
+    'lpo_id',
+    'category',
+    'items',
+    'quantity',
+    'unit_price',
+    'amount',
+    'message',
+    'expires_at',
+    'responded'
+];
 
     // Default values
     protected $attributes = [
@@ -45,6 +49,16 @@ class SupplierInvitation extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
+
+
+    /**
+ * The LPO related to this invitation
+ */
+public function lpo()
+{
+    return $this->belongsTo(Lpo::class, 'lpo_id');
+}
+
 
     /**
      * The invoice related to this invitation
