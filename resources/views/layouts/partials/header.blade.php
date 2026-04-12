@@ -24,13 +24,7 @@
 
 
     <!-- Styles -->
-    @vite('resources/src/plugins/jquery-steps/jquery.steps.css')
-    @vite('resources/src/plugins/datatables/css/dataTables.bootstrap4.min.css')
-    @vite('resources/src/plugins/datatables/css/responsive.bootstrap4.min.css')
-    @vite('resources/css/style.css')
-    
-    @vite('resources/css/icon-font.min.css')
-
+   @vite(['resources/css/app.scss', 'resources/css/icon-font.min.css', 'resources/css/style.css'])
     <!-- @vite('resources/css/core.css') -->
 </head>
 <body>
