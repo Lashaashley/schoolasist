@@ -130,7 +130,7 @@ Route::get('/streams/by-subject', [SubassignController::class, 'getclassbysub'])
 
 Route::get('preports', [PerformanceController::class, 'reports'])->name('preports');
 //Route::post('preports', [PerformanceController::class, 'store'])->name('preports.store');
-Route::get('/performance/pentry', [PerformanceController::class, 'index'])->name('performance.pentry');
+Route::get('pentry', [PerformanceController::class, 'index'])->name('performance.pentry');
 Route::get('/performance/students', [PerformanceController::class, 'getStudents'])->name('performance.students');
 Route::post('/performance/save', [PerformanceController::class, 'saveMarks'])->name('performance.save');
 Route::post('/preview-student-report', [PerformanceController::class, 'previewStudentReport'])->name('preview.student.report');
