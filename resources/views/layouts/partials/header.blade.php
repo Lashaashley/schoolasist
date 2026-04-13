@@ -25,6 +25,6 @@
 
     <!-- Styles -->
    @vite(['resources/css/app.scss', 'resources/css/icon-font.min.css', 'resources/css/style.css'])
-    <!-- @vite('resources/css/core.css') -->
+    
 </head>
 <body>
